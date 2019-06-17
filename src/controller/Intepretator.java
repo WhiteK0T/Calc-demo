@@ -3,7 +3,6 @@ package controller;
 import model.*;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.DirectoryStream;
@@ -26,20 +25,33 @@ public class Intepretator {
         listOperation.forEach(iCalc -> listStrOperation.add(iCalc.getOperation()));
     }
 
-    public List<String> getListSupportOperations() {
+    List<String> getListSupportOperations() {
         return listStrOperation;
     }
 
-    public int startIntr(int a, int b, String operator) {
+    int startIntr(int a, int b, String operator) {
         return listOperation.stream()
                 .filter(p -> p.getOperation().equals(operator))
                 .findFirst()
-                .get()
+                .orElseGet(() -> new ICalc() {
+                    @Override
+                    public String getOperation() {
+                        return "!";
+                    }
+
+                    @Override
+                    public int calc(int a, int b) {
+                        throw new RuntimeException("OperationException");
+                    }
+                })
                 .calc(a, b);
     }
 
     private void findAndAddModel() {
-        String pathStr = getPathProgName(Addition.class);
+        String pathStr = getPathProg();
+        if (pathStr == null) {
+            throw new RuntimeException("Проблема с доступом к моделям path=" + pathStr);
+        }
         if (pathStr.contains(".jar")) {
             jarLoadClass(pathStr, listOperation);
         } else {
@@ -86,8 +98,8 @@ public class Intepretator {
         }
     }
 
-    private static String getPathProgName(Class<?> classGetPath) {
-        String pathClass = classGetPath.getProtectionDomain().getCodeSource().getLocation().getFile();
+    private static String getPathProg() {
+        String pathClass = ICalc.class.getProtectionDomain().getCodeSource().getLocation().getFile();
         if (pathClass == null) return null;
         if (pathClass.charAt(0) == '/' & System.getProperty("os.name").toLowerCase().contains("win"))
             pathClass = pathClass.substring(1);
