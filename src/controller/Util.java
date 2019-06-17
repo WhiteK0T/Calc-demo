@@ -1,23 +1,19 @@
 package controller;
 
-import java.util.Collections;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-
 public class Util {
 
     private static String[] rims = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I", " "};
     private static int[] arab = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1, 0};
 
     public static String ArabToRim(int n) {
-        String s = "";
+        StringBuilder s = new StringBuilder();
         for (int i = 1; n > 0; i++) {
             while (arab[i] <= n) {
-                s = s + rims[i];
+                s.append(rims[i]);
                 n = n - arab[i];
             }
         }
-        return s;
+        return s.toString();
     }
 
     public static int RimToArab(String roman) {
