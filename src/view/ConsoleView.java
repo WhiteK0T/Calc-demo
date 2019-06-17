@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class ConsoleView {
-    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    {
+    private BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static {
         System.out.println("Калькулятор. Enter выход!");
     }
 
